@@ -1,36 +1,37 @@
-import { useState } from 'react';
 import { nanoid } from 'nanoid';
-import PropTypes from 'prop-types';
-import { FormBox, Label, Input, Button } from './Form.styled';
+import { useSelector, useDispatch } from 'react-redux';
 
-const Form = ({ onSubmit }) => {
+import { FormBox, Label, Input, Button } from './Form.styled';
+import { addContact } from 'redux/contactsSlice';
+import { getContacts } from 'redux/selectors';
+
+const Form = () => {
   const nameId = nanoid();
   const numberId = nanoid();
 
-  const [name, setName] = useState('');
-  const [number, setNumber] = useState('');
-
-  const handleChange = e => {
-    switch (e.target.name) {
-      case 'name':
-        setName(e.target.value);
-        break;
-
-      case 'number':
-        setNumber(e.target.value);
-        break;
-
-      default:
-        return;
-    }
-  };
+  const contacts = useSelector(getContacts);
+  const dispatch = useDispatch();
 
   const handleSubmit = e => {
     e.preventDefault();
 
-    e.target.reset();
+    const form = e.target;
 
-    onSubmit({ id: nanoid(), name, number });
+    const isInContacts = contacts.find(
+      ({ name }) => name.toLowerCase() === form.name.value.toLowerCase()
+    );
+
+    if (isInContacts) return alert(`${form.name.value} is already in contacts`);
+
+    dispatch(
+      addContact({
+        id: nanoid(),
+        name: form.name.value,
+        number: form.number.value,
+      })
+    );
+
+    e.target.reset();
   };
 
   return (
@@ -43,7 +44,6 @@ const Form = ({ onSubmit }) => {
         title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
         required
         id={nameId}
-        onChange={handleChange}
       />
 
       <Label htmlFor={numberId}>Number</Label>
@@ -54,7 +54,6 @@ const Form = ({ onSubmit }) => {
         title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
         required
         id={numberId}
-        onChange={handleChange}
       />
 
       <Button type="submit">Add contact</Button>
@@ -63,7 +62,3 @@ const Form = ({ onSubmit }) => {
 };
 
 export default Form;
-
-Form.propTypes = {
-  onSubmit: PropTypes.func.isRequired,
-};
