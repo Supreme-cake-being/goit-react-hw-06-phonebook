@@ -10,10 +10,8 @@ const Contacts = () => {
   const contacts = useSelector(getContacts);
   const filter = useSelector(getFilter);
 
-  console.log(Object.values(contacts));
-
-  const filteredContacts = Object.values(contacts).filter(({ name }) =>
-    name.includes(filter)
+  const filteredContacts = contacts.filter(({ name }) =>
+    name.toLowerCase().includes(filter)
   );
 
   return (
