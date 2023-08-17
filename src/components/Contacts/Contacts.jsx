@@ -10,6 +10,10 @@ const Contacts = () => {
   const contacts = useSelector(getContacts);
   const filter = useSelector(getFilter);
 
+  Object.values(contacts).forEach(contact =>
+    console.log(contact.name.toLowerCase())
+  );
+
   const filteredContacts = Object.values(contacts).filter(({ name }) =>
     name.toLowerCase().includes(filter)
   );
